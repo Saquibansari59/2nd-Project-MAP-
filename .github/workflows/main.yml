@@ -42,11 +42,11 @@ jobs:
         if: env.diff == 'yes'
         run: git commit -m "Added Hello World script for ${{ inputs.user }}" --no-verify
 
-      - name: Fetch from main
+      - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull changes from main
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull latest changes with rebase
+        run: git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
