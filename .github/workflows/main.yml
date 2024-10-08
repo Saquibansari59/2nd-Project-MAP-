@@ -48,8 +48,10 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes with rebase
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull latest changes with rebase and resolve conflicts automatically
+        run: |
+          git config pull.rebase true
+          git pull --rebase --strategy=ours https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
