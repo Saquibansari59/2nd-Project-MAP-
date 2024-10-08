@@ -60,3 +60,8 @@ jobs:
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+
+      - name: Cleanup
+        run: |
+          echo "Cleaning up temporary files..."
+          git clean -fdx  # Removes untracked files and directories
