@@ -2,8 +2,8 @@ name: Add Hello World and Manage Git Changes
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:
         type: string
         required: true
       variable:
@@ -17,18 +17,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create lock file
-        run: |
-          LOCK_FILE="lockfile.lock"
-          while [ -f "$LOCK_FILE" ]; do
-            echo "Lock file exists. Waiting..."
-            sleep 5
-          done
-          touch "$LOCK_FILE"
-
       - name: Add "Hello World" to map.py
-        run: |
-          echo '${{ inputs.variable }}' >> map.py
+        run: echo '${{ inputs.variable }}' >> map.py
 
       - name: Configure Git user
         run: |
@@ -54,23 +44,19 @@ jobs:
         if: env.diff == 'yes'
         run: git commit -m "Added Hello World script for ${{ inputs.user }}" --no-verify
 
-      - name: Delay for 15 seconds
-        run: sleep 15
-
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes with rebase and handle conflicts
+      - name: Pull latest changes with rebase and retry on conflict
         run: |
-          git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git || (
-            echo "Conflict detected, aborting rebase..." &&
-            git rebase --abort &&
-            exit 1
-          )
+          for i in {1..3}; do
+            git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git && break || (
+              echo "Conflict detected, retrying..." &&
+              git rebase --abort &&
+              sleep 20
+            )
+          done
 
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
-
-      - name: Remove lock file
-        run: rm -f lockfile.lock
