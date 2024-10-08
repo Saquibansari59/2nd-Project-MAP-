@@ -17,6 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Create lock file
+        run: |
+          LOCK_FILE="lockfile.lock"
+          while [ -f "$LOCK_FILE" ]; do
+            echo "Lock file exists. Waiting..."
+            sleep 5
+          done
+          touch "$LOCK_FILE"
+
       - name: Add "Hello World" to map.py
         run: |
           echo '${{ inputs.variable }}' >> map.py
@@ -43,14 +52,25 @@ jobs:
 
       - name: Commit changed file
         if: env.diff == 'yes'
-        run: git commit -m "Added Hello World script" --no-verify
+        run: git commit -m "Added Hello World script for ${{ inputs.user }}" --no-verify
+
+      - name: Delay for 15 seconds
+        run: sleep 15
 
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes with rebase
-        run: git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull latest changes with rebase and handle conflicts
+        run: |
+          git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git || (
+            echo "Conflict detected, aborting rebase..." &&
+            git rebase --abort &&
+            exit 1
+          )
 
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+
+      - name: Remove lock file
+        run: rm -f lockfile.lock
