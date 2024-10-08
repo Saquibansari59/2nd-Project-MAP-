@@ -52,15 +52,14 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes and reset on conflict
+      - name: Pull latest changes with merge strategy
         run: |
-          git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git || true
-          if [[ $(git ls-files -u) ]]; then
-            echo "Merge conflict detected. Resetting changes..."
-            git reset --hard
-            git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
-          fi
+          git pull --no-rebase --strategy-option theirs https://github.com/Saquibansari59/2nd-Project-MAP-.git || true
 
       - name: Push Changes to main
         if: env.diff == 'yes'
-        run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: |
+          git push --force https://github.com/Saquibansari59/2nd-Project-MAP-.git
+
+      - name: Take a pause
+        run: sleep 15
