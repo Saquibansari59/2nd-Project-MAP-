@@ -2,7 +2,7 @@ name: Modify main.py and Update (if changed)
 
 on:
   push:
-    branches: [ feature/rebase ]  # Change to your desired branch(es)
+    branches: [ main ]  # Change to your desired branch(es)
 
 jobs:
   modify_and_update:
@@ -31,15 +31,15 @@ jobs:
         run: git add main.py
 
       - name: Commit Changed File (if changed)
-        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+        if: ${{ steps.diff.outputs.diff == 'yes' }}  # Typo fixed here
         run: git commit -m "Auto Updating main.py" --no-verify
 
       - name: Fetch from main (replace AAC with your repo name)
-        run: git fetch ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+        run: git fetch ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
 
       - name: Pull changes from main (replace AAC with your repo name)
-        run: git pull ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+        run: git pull ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
 
       - name: Push Changes to main (replace AAC with your repo name)
         if: ${{ steps.diff_check.outputs.diff == 'yes' }}
-        run: git push ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+        run: git push ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
