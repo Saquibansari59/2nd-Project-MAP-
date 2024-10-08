@@ -43,7 +43,7 @@ jobs:
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Merge latest changes
-        run: git merge origin/main
+        run: git merge origin/add-hello-world
 
       - name: Push changes to new branch
         run: git push origin add-hello-world
