@@ -14,9 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Add "Hello World" to map.py
+      - name: Add "Hello World" to hello_world.py
         run: |
-          echo 'print("Hello World")' >> map.py
+          echo 'print("Hello World")' >> hello_world.py
+
+      - name: Configure Git user
+        run: |
+          git config --local user.name "${{ inputs.user }}"
+          git config --local user.email "${{ inputs.user }}@example.com"
 
       - name: Check Changes
         run: git status
@@ -24,25 +29,25 @@ jobs:
       - name: Check diff
         id: diff_check
         run: |
-          if git diff map.py; then
+          if git diff ./assets/users.csv; then
             echo "diff=yes" >> $GITHUB_ENV
           else
             echo "diff=no" >> $GITHUB_ENV
           fi
 
-      - name: Stage map.py file
-        run: git add map.py
+      - name: Stage hello_world.py file
+        run: git add hello_world.py
 
       - name: Commit changed file
         if: env.diff == 'yes'
         run: git commit -m "Added Hello World script for ${{ inputs.user }}" --no-verify
 
       - name: Fetch from main
-        run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git fetch ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
 
       - name: Pull changes from main
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git pull ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
-        run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git push ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
