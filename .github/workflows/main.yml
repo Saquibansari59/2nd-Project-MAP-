@@ -16,7 +16,7 @@ jobs:
 
       - name: Add "Hello World" to map.py
         run: |
-          echo 'print("Hello World")' >> map.py
+          echo 'print("Hello Saquib")' >> map.py
 
       - name: Configure Git user
         run: |
