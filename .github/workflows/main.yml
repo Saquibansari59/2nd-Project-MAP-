@@ -18,11 +18,8 @@ jobs:
   add-hello-world:
     runs-on: ubuntu-latest
     steps:
-      - name: Take a pause
-        run: sleep 15
-      
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
 
       - name: Add "Hello World" to map.py
         run: |
@@ -61,6 +58,3 @@ jobs:
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
-
-      - name: Take a pause
-        run: sleep 5
