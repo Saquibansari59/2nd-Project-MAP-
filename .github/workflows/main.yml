@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
+        with:
+          clean: true
 
       - name: Add "Hello World" to map.py
         run: |
@@ -53,7 +55,7 @@ jobs:
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Pull latest changes with rebase
-        run: git pull origin main --rebase
+        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
