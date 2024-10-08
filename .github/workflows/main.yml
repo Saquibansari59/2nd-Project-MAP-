@@ -20,8 +20,8 @@ jobs:
 
       - name: Configure Git user
         run: |
-          git config --local user.name "${{ inputs.user }}"
-          git config --local user.email saquibansari59@gmail.com"
+          git config --local user.name saquibansari59
+          git config --local user.email saquibansari59@gmail.com
 
       - name: Check Changes
         run: git status
