@@ -48,11 +48,6 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes
-        run: |
-          git config merge.ours.driver true
-          git pull --no-edit --strategy-option=ours https://github.com/Saquibansari59/2nd-Project-MAP-.git
-
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
