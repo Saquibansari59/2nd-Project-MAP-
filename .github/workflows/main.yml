@@ -14,9 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Add "Hello World" to hello_world.py
+      - name: Add "Hello World" to map.py
         run: |
-          echo 'print("Hello World")' >> hello_world.py
+          echo 'print("Hello World")' >> map.py
 
       - name: Check Changes
         run: git status
@@ -30,8 +30,8 @@ jobs:
             echo "diff=no" >> $GITHUB_ENV
           fi
 
-      - name: Stage hello_world.py file
-        run: git add hello_world.py
+      - name: Stage map.py file
+        run: git add map.py
 
       - name: Commit changed file
         if: env.diff == 'yes'
