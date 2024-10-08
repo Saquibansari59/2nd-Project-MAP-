@@ -24,7 +24,7 @@ jobs:
       - name: Check diff
         id: diff_check
         run: |
-          if git diff ./assets/users.csv; then
+          if git diff map.py; then
             echo "diff=yes" >> $GITHUB_ENV
           else
             echo "diff=no" >> $GITHUB_ENV
