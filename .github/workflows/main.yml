@@ -19,7 +19,7 @@ jobs:
 
       - name: Add "Hello World" to map.py
         run: |
-          echo 'print("Hello ")' >> map.py
+          echo '${{ inputs.variable }}' >> map.py
 
       - name: Configure Git user
         run: |
