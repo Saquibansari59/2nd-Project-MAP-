@@ -53,7 +53,7 @@ jobs:
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Pull latest changes with rebase
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git pull origin main --rebase
 
       - name: Push Changes to main
         if: env.diff == 'yes'
