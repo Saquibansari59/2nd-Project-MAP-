@@ -1,44 +1,47 @@
-name: Add HW
+name: Add Hello World and Manage Git Changes
 
 on:
   workflow_dispatch:
-    inputs:
-      user:
+    inputs: 
+      user: 
         type: string
         required: true
       variable:
         type: string
         required: true
 
-concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
-
 jobs:
   add-hello-world:
     runs-on: ubuntu-latest
     steps:
-      - name: Remove temporary files
-        run: |
-          rm -rf /home/runner/work/_temp*
-
       - name: Checkout repository
-        uses: actions/checkout@main
-        with:
-          clean: true
+        uses: actions/checkout@v2
 
+      # Step 1: Check if lock file exists and wait if necessary
+      - name: Wait for lock to be released
+        run: |
+          while [ -f .git/LOCK_FILE ]; do
+            echo "Waiting for the lock to be released..."
+            sleep 5
+          done
+          touch .git/LOCK_FILE  # Create the lock file to block other jobs
+
+      # Step 2: Add "Hello World" to map.py
       - name: Add "Hello World" to map.py
         run: |
           echo '${{ inputs.variable }}' >> map.py
 
+      # Step 3: Configure Git user
       - name: Configure Git user
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
 
+      # Step 4: Check Changes
       - name: Check Changes
         run: git status
 
+      # Step 5: Check diff
       - name: Check diff
         id: diff_check
         run: |
@@ -48,30 +51,28 @@ jobs:
             echo "diff=no" >> $GITHUB_ENV
           fi
 
+      # Step 6: Stage map.py file
       - name: Stage map.py file
         run: git add map.py
 
+      # Step 7: Commit changed file
       - name: Commit changed file
         if: env.diff == 'yes'
         run: git commit -m "Added Hello World script" --no-verify
 
+      # Step 8: Fetch latest changes from remote
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Stash local changes
-        run: git stash
-
+      # Step 9: Pull latest changes with rebase
       - name: Pull latest changes with rebase
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git 
 
-      - name: Apply stashed changes (ignore error if no stash)
-        run: git stash pop || echo "No changes stashed."
-
+      # Step 10: Push Changes to main
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Cleanup
-        run: |
-          echo "Cleaning up temporary files..."
-          git clean -fdx  # Removes untracked files and directories
+      # Step 11: Remove lock file to unblock other jobs
+      - name: Remove lock file
+        run: rm .git/LOCK_FILE
