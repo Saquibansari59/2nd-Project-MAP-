@@ -52,8 +52,8 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: rebase latest changes with rebase
-        run: git rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull latest changes with rebase
+        run: git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
