@@ -52,13 +52,13 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes and resolve conflicts
+      - name: Pull latest changes and reset on conflict
         run: |
           git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git || true
           if [[ $(git ls-files -u) ]]; then
-            echo "Merge conflict detected. Resolving..."
-            git add .
-            git commit -m "Resolved merge conflicts automatically"
+            echo "Merge conflict detected. Resetting changes..."
+            git reset --hard
+            git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
           fi
 
       - name: Push Changes to main
