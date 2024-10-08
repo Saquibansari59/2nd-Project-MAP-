@@ -2,8 +2,8 @@ name: Add HW
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:
         type: string
         required: true
       variable:
@@ -64,8 +64,8 @@ jobs:
       - name: Pull latest changes with rebase
         run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Apply stashed changes
-        run: git stash pop
+      - name: Apply stashed changes (ignore error if no stash)
+        run: git stash pop || echo "No changes stashed."
 
       - name: Push Changes to main
         if: env.diff == 'yes'
