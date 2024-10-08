@@ -1,0 +1,48 @@
+name: Modify main.py and Update (if changed)
+
+on:
+  push:
+    branches: [ feature/rebase ]  # Change to your desired branch(es)
+
+jobs:
+  modify_and_update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Modify main.py
+        run: |
+          echo "print(\"Hello world\")" >> main.py
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          git   
+ add main.py
+          git commit -m "Added print statement to main.py"
+
+      - name: Check Changes in main.py
+        run: git status main.py
+
+      - name: Check for Diff in main.py (id: diff_check)
+        id: diff_check
+        run: if [[ `git diff main.py` ]] ; then echo "diff=yes" >> $GITHUB_OUTPUT; fi
+
+      - name: Stage Changed File (if changed)
+        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+        run: git add main.py
+
+      - name: Commit Changed File (if changed)
+        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+        run: git commit -m "Auto Updating main.py" --no-verify
+
+      - name: Fetch from main (replace AAC with your repo name)
+        run: git fetch ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+
+      - name: Pull changes from main (replace AAC with your repo name)
+        run: git pull ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+
+      - name: Push Changes to main (replace AAC with your repo name)
+        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+        run: git push ssh://git@ssh.github.com:443/2nd-Project-MAP-/feature/rebase.git  # Replace with your details
+
+**Changes Made:**
