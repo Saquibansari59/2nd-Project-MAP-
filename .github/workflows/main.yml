@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Remove temporary files
         run: |
-          rm -rf /path/to/temp/files/*
+          rm -rf /home/runner/work/_temp*
 
       - name: Checkout repository
         uses: actions/checkout@main
