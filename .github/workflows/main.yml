@@ -18,6 +18,10 @@ jobs:
   add-hello-world:
     runs-on: ubuntu-latest
     steps:
+      - name: Remove temporary files
+        run: |
+          rm -rf /path/to/temp/files/*
+
       - name: Checkout repository
         uses: actions/checkout@main
         with:
