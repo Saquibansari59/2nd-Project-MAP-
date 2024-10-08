@@ -11,8 +11,8 @@ on:
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+  group: "add-hello-world-${{ github.ref }}"  
+  cancel-in-progress: false  
 
 jobs:
   add-hello-world:
@@ -52,8 +52,14 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes with rebase
-        run: git pull --ff-only https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull latest changes and resolve conflicts
+        run: |
+          git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git || true
+          if [[ $(git ls-files -u) ]]; then
+            echo "Merge conflict detected. Resolving..."
+            git add .
+            git commit -m "Resolved merge conflicts automatically"
+          fi
 
       - name: Push Changes to main
         if: env.diff == 'yes'
