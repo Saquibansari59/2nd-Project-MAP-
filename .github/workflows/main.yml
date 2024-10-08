@@ -16,7 +16,7 @@ jobs:
 
       - name: Add "Hello World" to map.py
         run: |
-          echo 'print("Hello Saquib")' >> map.py
+          echo 'print("Hello ")' >> map.py
 
       - name: Configure Git user
         run: |
@@ -43,7 +43,7 @@ jobs:
         run: git commit -m "Added Hello World script" --no-verify
 
       - name: Delay for 15 seconds
-        run: sleep 15
+        run: sleep 1
 
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
