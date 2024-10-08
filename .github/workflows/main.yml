@@ -1,18 +1,14 @@
-name: Add HW (separate branch, git merge)
+name: Add Hello World and Manage Git Changes
 
 on:
   workflow_dispatch:
-    inputs:
-      user:
+    inputs: 
+      user: 
         type: string
         required: true
       variable:
         type: string
         required: true
-
-concurrency:
-  group: "add-hello-world-${{ github.ref }}"
-  cancel-in-progress: false
 
 jobs:
   add-hello-world:
@@ -20,9 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Checkout a new branch for script
-        run: git checkout -b add-hello-world
 
       - name: Add "Hello World" to map.py
         run: |
@@ -33,17 +26,33 @@ jobs:
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
 
+      - name: Check Changes
+        run: git status
+
+      - name: Check diff
+        id: diff_check
+        run: |
+          if git diff map.py; then
+            echo "diff=yes" >> $GITHUB_ENV
+          else
+            echo "diff=no" >> $GITHUB_ENV
+          fi
+
       - name: Stage map.py file
         run: git add map.py
 
       - name: Commit changed file
+        if: env.diff == 'yes'
         run: git commit -m "Added Hello World script" --no-verify
 
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Merge latest changes
-        run: git merge origin/add-hello-world
+      - name: Pull latest changes
+        run: |
+          git config merge.ours.driver true
+          git pull --no-edit --strategy-option=ours https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Push changes to new branch
-        run: git push origin add-hello-world
+      - name: Push Changes to main
+        if: env.diff == 'yes'
+        run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
