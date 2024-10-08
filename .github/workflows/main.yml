@@ -1,45 +1,48 @@
-name: Modify main.py and Update (if changed)
+name: Add Hello World and Manage Git Changes
 
 on:
-  push:
-    branches: [ main ]  # Change to your desired branch(es)
+  workflow_dispatch:
+    inputs: 
+      user: 
+        type: string
+        required: true
 
 jobs:
-  modify_and_update:
+  add-hello-world:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Modify main.py
+      - name: Add "Hello World" to hello_world.py
         run: |
-          echo "print(\"Hello world\")" >> main.py
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
-          git add main.py  # Added the missing "add" command
-          git commit -m "Added print statement to main.py"
+          echo 'print("Hello World")' >> hello_world.py
 
-      - name: Check Changes in main.py
-        run: git status main.py
+      - name: Check Changes
+        run: git status
 
-      - name: Check for Diff in main.py (id: diff_check)
+      - name: Check diff
         id: diff_check
-        run: if [[ `git diff main.py` ]] ; then echo "diff=yes" >> $GITHUB_OUTPUT; fi
+        run: |
+          if git diff ./assets/users.csv; then
+            echo "diff=yes" >> $GITHUB_ENV
+          else
+            echo "diff=no" >> $GITHUB_ENV
+          fi
 
-      - name: Stage Changed File (if changed)
-        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
-        run: git add main.py
+      - name: Stage hello_world.py file
+        run: git add hello_world.py
 
-      - name: Commit Changed File (if changed)
-        if: ${{ steps.diff.outputs.diff == 'yes' }}  # Typo fixed here
-        run: git commit -m "Auto Updating main.py" --no-verify
+      - name: Commit changed file
+        if: env.diff == 'yes'
+        run: git commit -m "Added Hello World script for ${{ inputs.user }}" --no-verify
 
-      - name: Fetch from main (replace AAC with your repo name)
-        run: git fetch ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
+      - name: Fetch from main
+        run: git fetch ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
 
-      - name: Pull changes from main (replace AAC with your repo name)
-        run: git pull ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
+      - name: Pull changes from main
+        run: git pull ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
 
-      - name: Push Changes to main (replace AAC with your repo name)
-        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
-        run: git push ssh://git@ssh.github.com:443/2nd-Project-MAP-/main.git  # Replace with your details
+      - name: Push Changes to main
+        if: env.diff == 'yes'
+        run: git push ssh://git@ssh.github.com:443/AMD-Accel-Cloud/AAC.git
