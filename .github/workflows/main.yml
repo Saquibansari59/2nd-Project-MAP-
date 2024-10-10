@@ -40,28 +40,25 @@ jobs:
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
 
-      - name: Check Changes
-        run: git status
-
-      - name: Check diff
-        id: diff_check
-        run: if [[ `git diff` ]] ; then echo "diff=yes" >> $GITHUB_OUTPUT; fi
-
       - name: Stage Changed Files
-        run: git add .
+        run: git add map.py
 
-      - name: Commit Changed Files (if changes detected)
-        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
-        run: git commit -m "Added ${{ inputs.variable }} to map.py and updated related files" --no-verify
+      - name: Commit Changes
+        run: git commit -m "Added ${{ inputs.variable }} to map.py and updated related files"
 
       - name: Fetch from main
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Pull changes from main with rebase
-        run: git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: |
+          git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git || (
+            echo "Resolving conflicts automatically"
+            git checkout --ours map.py
+            git add map.py
+            git rebase --continue
+          )
 
-      - name: Push Changes to main (if changes detected)
-        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+      - name: Push Changes to main
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Remove lock file
