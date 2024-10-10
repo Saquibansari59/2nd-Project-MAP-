@@ -12,7 +12,7 @@ on:
 
 concurrency:
   group: "Add_HW-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+  cancel-in-progress: true  # Wait for the previous job to complete instead of canceling it
 
 jobs:
   Add_HW:
