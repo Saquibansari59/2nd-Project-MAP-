@@ -27,6 +27,7 @@ jobs:
 
       - name: Add "Hello World" to map.py
         run: |
+          echo '# Added by run #${{ github.run_id }}' >> map.py
           echo '${{ inputs.variable }}' >> map.py
 
       - name: Configure Git user
@@ -58,7 +59,10 @@ jobs:
 
       - name: Rebase latest changes onto temporary branch
         run: |
-          git rebase origin/main
+          if ! git rebase origin/main; then
+            echo "Rebase failed due to conflicts. Please resolve it manually."
+            exit 1
+          fi
 
       - name: Push Changes to main
         if: env.diff == 'yes'
