@@ -2,75 +2,62 @@ name: Add HW
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:  # Username for reference (optional)
         type: string
-        required: true
-      variable:
+        required: false
+      variable:  # Variable to add to map.py
         type: string
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"
-  cancel-in-progress: false
+  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs run one at a time per ref
+  cancel-in-progress: false                 # Wait for previous job to complete
 
 jobs:
   add-hello-world:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Create a temporary branch
-        run: |
-          git checkout -b temp-branch-${{ github.run_id }}
+      - name: Checkout repository with shallow depth (optional - consider this)
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Add "Hello World" to map.py
         run: |
-          echo '# Added by run #${{ github.run_id }}' >> map.py
           echo '${{ inputs.variable }}' >> map.py
 
-      - name: Configure Git user
+      - name: Configure Git user (optional, adjust as needed)
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
 
-      - name: Check Changes
-        run: git status
+      - name: Check Changes (optional - consider adding explicit clean-up)
+        # Uncomment if needed, use with caution
+        # run: git clean -f
 
       - name: Check diff
         id: diff_check
         run: |
-          if git diff --quiet map.py; then
-            echo "diff=no" >> $GITHUB_ENV
-          else
+          if git diff map.py; then
             echo "diff=yes" >> $GITHUB_ENV
+          else
+            echo "diff=no" >> $GITHUB_ENV
           fi
 
-      - name: Stage map.py file
+      - name: Stage changed file
         run: git add map.py
 
       - name: Commit changed file
         if: env.diff == 'yes'
         run: git commit -m "Added Hello World script" --no-verify
 
-      - name: Fetch latest changes from remote
-        run: git fetch origin main
+      - name: Fetch latest changes from remote (optional, consider actions with clean fetch)
+        run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Rebase latest changes onto temporary branch
-        run: |
-          if ! git rebase origin/main; then
-            echo "Rebase failed due to conflicts. Please resolve it manually."
-            exit 1
-          fi
+      - name: Pull latest changes with rebase (optional, consider actions with clean pull)
+        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
-        run: |
-          git checkout main
-          git merge temp-branch-${{ github.run_id }}
-          git push origin main
-
-      - name: Clean up temporary branch
-        if: env.diff == 'yes'
-        run: git branch -d temp-branch-${{ github.run_id }}
+        run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
