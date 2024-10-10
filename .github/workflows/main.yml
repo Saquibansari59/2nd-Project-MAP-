@@ -11,8 +11,8 @@ on:
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+  group: "add-hello-world-${{ github.ref }}"
+  cancel-in-progress: false
 
 jobs:
   add-hello-world:
@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Create a temporary branch
+        run: |
+          git checkout -b temp-branch-${{ github.run_id }}
 
       - name: Add "Hello World" to map.py
         run: |
@@ -36,10 +40,10 @@ jobs:
       - name: Check diff
         id: diff_check
         run: |
-          if git diff map.py; then
-            echo "diff=yes" >> $GITHUB_ENV
-          else
+          if git diff --quiet map.py; then
             echo "diff=no" >> $GITHUB_ENV
+          else
+            echo "diff=yes" >> $GITHUB_ENV
           fi
 
       - name: Stage map.py file
@@ -50,11 +54,19 @@ jobs:
         run: git commit -m "Added Hello World script" --no-verify
 
       - name: Fetch latest changes from remote
-        run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: git fetch origin main
 
-      - name: Pull latest changes
-        run: git pull origin main || { git merge --abort; echo "Merge conflict occurred"; exit 1; }
+      - name: Rebase latest changes onto temporary branch
+        run: |
+          git rebase origin/main
 
       - name: Push Changes to main
         if: env.diff == 'yes'
-        run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+        run: |
+          git checkout main
+          git merge temp-branch-${{ github.run_id }}
+          git push origin main
+
+      - name: Clean up temporary branch
+        if: env.diff == 'yes'
+        run: git branch -d temp-branch-${{ github.run_id }}
