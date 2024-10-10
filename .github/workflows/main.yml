@@ -2,17 +2,17 @@ name: Add HW
 
 on:
   workflow_dispatch:
-    inputs:
-      user:  # Username for reference (optional)
+    inputs: 
+      user: 
         type: string
-        required: false
-      variable:  # Variable to add to map.py
+        required: true
+      variable:
         type: string
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs run one at a time per ref (or other unique value)
-  cancel-in-progress: false                 # Wait for previous job to complete, don't cancel
+  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
+  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
 
 jobs:
   add-hello-world:
@@ -25,28 +25,36 @@ jobs:
         run: |
           echo '${{ inputs.variable }}' >> map.py
 
-      - name: Configure Git user (optional, adjust as needed)
+      - name: Configure Git user
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
 
-      - name: Stage Changed Files
+      - name: Check Changes
+        run: git status
+
+      - name: Check diff
+        id: diff_check
+        run: |
+          if git diff map.py; then
+            echo "diff=yes" >> $GITHUB_ENV
+          else
+            echo "diff=no" >> $GITHUB_ENV
+          fi
+
+      - name: Stage map.py file
         run: git add map.py
 
-      - name: Commit Changes
-        run: git commit -m "Added ${{ inputs.variable }} to map.py and updated related files"
+      - name: Commit changed file
+        if: env.diff == 'yes'
+        run: git commit -m "Added Hello World script" --no-verify
 
-      - name: Fetch from main
+      - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull changes from main with rebase
-        run: |
-          git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git || (
-            echo "Resolving conflicts automatically"
-            git checkout --ours map.py
-            git add map.py
-            git rebase --continue
-          )
+      - name: Pull latest changes with rebase
+        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
+        if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
