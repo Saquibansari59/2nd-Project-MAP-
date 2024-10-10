@@ -1,18 +1,20 @@
+# This workflow adds "Hello World" to map.py and updates related files
+
 name: Add HW
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:  # Username for reference (optional)
         type: string
-        required: true
-      variable:
+        required: false
+      variable:  # Variable to add to map.py
         type: string
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs run one at a time per ref
+  cancel-in-progress: false                 # Wait for previous job to complete
 
 jobs:
   add-hello-world:
@@ -25,7 +27,7 @@ jobs:
         run: |
           echo '${{ inputs.variable }}' >> map.py
 
-      - name: Configure Git user
+      - name: Configure Git user (optional, adjust as needed)
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
@@ -35,29 +37,21 @@ jobs:
 
       - name: Check diff
         id: diff_check
-        run: |
-          if git diff map.py; then
-            echo "diff=yes" >> $GITHUB_ENV
-          else
-            echo "diff=no" >> $GITHUB_ENV
-          fi
+        run: if [[ `git diff` ]] ; then echo "diff=yes" >> $GITHUB_OUTPUT; fi
 
-      - name: Stage map.py file
-        run: git add map.py
+      - name: Stage Changed Files
+        run: git add .
 
-      - name: Commit changed file
-        if: env.diff == 'yes'
-        run: git commit -m "Added Hello World script" --no-verify
+      - name: Commit Changed Files (if changes detected)
+        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
+        run: git commit -m "Added ${{ inputs.variable }} to map.py and updated related files" --no-verify
 
-      - name: Fetch latest changes from remote
+      - name: Fetch from main (uncomment if needed)
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Rebase
-        run: git config pull.rebase true
-
-      - name: Pull latest changes with rebase
+      - name: Pull changes from main (uncomment if needed)
         run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Push Changes to main
-        if: env.diff == 'yes'
+      - name: Push Changes to main (if changes detected)
+        if: ${{ steps.diff_check.outputs.diff == 'yes' }}
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
