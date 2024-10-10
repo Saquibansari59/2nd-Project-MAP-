@@ -21,15 +21,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create lock file
+      - name: Wait for lock to be released
         run: |
-          if [ -f .gitlock ]; then
-            echo "Another job is currently running. Exiting."
-            exit 1
-          else
-            echo "Locking the file for changes."
-            touch .gitlock
-          fi
+          retries=10
+          count=0
+          while [ -f .gitlock ]; do
+            if [ $count -ge $retries ]; then
+              echo "Another job is still holding the lock. Exiting after 10 retries."
+              exit 1
+            fi
+            echo "Another job is currently running. Waiting for the lock to be released..."
+            sleep 10  # Wait for 10 seconds before checking again
+            count=$((count+1))
+          done
+          echo "Lock is released. Proceeding with the job."
+          touch .gitlock
 
       - name: Add "Hello World" to map.py
         run: |
