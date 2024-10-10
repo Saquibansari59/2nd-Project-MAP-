@@ -1,25 +1,27 @@
-name: Add_HW
+name: Add HW
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:  # Username for reference (optional)
+        type: string
+        required: false
+      variable:  # Variable to add to map.py
         type: string
         required: true
-      variable:
-        type: string
-        required: true
-
+        
 concurrency:
-  group: "Add_HW-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: true  # Wait for the previous job to complete instead of canceling it
+  group: "add-hello-world-${{ github.ref }}"
+  cancel-in-progress: false
 
 jobs:
-  Add_HW:
+  add-hello-world:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          clean: true  # Explicitly wipe out any existing workspace data
+          fetch-depth: 0  # (Optional) shallow fetch to reduce download size
 
       - name: Add "Hello World" to map.py
         run: |
@@ -52,9 +54,13 @@ jobs:
       - name: Fetch latest changes from remote
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull latest changes with rebase
+      - name: Pull latest changes
         run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main
         if: env.diff == 'yes'
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+
+      - uses: actions/checkout@v2
+        with:
+          clean: true  # Explicitly wipe out data after job completion
