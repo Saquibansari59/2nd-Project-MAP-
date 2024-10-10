@@ -11,8 +11,8 @@ on:
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs run one at a time per ref
-  cancel-in-progress: false                 # Wait for previous job to complete
+  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs run one at a time per ref (or other unique value)
+  cancel-in-progress: false                 # Wait for previous job to complete, don't cancel
 
 jobs:
   add-hello-world:
@@ -20,22 +20,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Wait for lock to be released
-        run: |
-          retries=10
-          count=0
-          while [ -f .gitlock ]; do
-            if [ $count -ge $retries ]; then
-              echo "Another job is still holding the lock. Exiting after 10 retries."
-              exit 1
-            fi
-            echo "Another job is currently running. Waiting for the lock to be released..."
-            sleep 10  # Wait for 10 seconds before checking again
-            count=$((count+1))
-          done
-          echo "Lock is released. Proceeding with the job."
-          touch .gitlock
 
       - name: Add "Hello World" to map.py
         run: |
@@ -66,10 +50,3 @@ jobs:
 
       - name: Push Changes to main
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
-
-      - name: Remove lock file
-        run: rm .gitlock
-
-      - name: Ensure lock file is removed (always run, even on failure)
-        if: failure() || success()
-        run: rm -f .gitlock
