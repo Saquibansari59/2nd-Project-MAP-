@@ -2,17 +2,16 @@ name: Add HW
 
 on:
   workflow_dispatch:
-    inputs: 
-      user: 
+    inputs:
+      user:  # Username for reference (optional)
         type: string
-        required: true
-      variable:
+        required: false
+      variable:  # Variable to add to map.py
         type: string
         required: true
 
 concurrency:
-  group: "add-hello-world-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
-  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+  group: "add-hello-world-${{ github.sha }}"  # More specific concurrency group
 
 jobs:
   add-hello-world:
@@ -25,7 +24,7 @@ jobs:
         run: |
           echo '${{ inputs.variable }}' >> map.py
 
-      - name: Configure Git user
+      - name: Configure Git user (optional, adjust as needed)
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
