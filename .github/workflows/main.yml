@@ -1,30 +1,31 @@
-name: Add HW
+name: Add_HW
 
 on:
   workflow_dispatch:
-    inputs:
-      user:  # Username for reference (optional)
+    inputs: 
+      user: 
         type: string
-        required: false
-      variable:  # Variable to add to map.py
+        required: true
+      variable:
         type: string
         required: true
 
+concurrency:
+  group: "Add_HW-${{ github.ref }}"  # Ensures jobs with this group name run one at a time per ref (e.g., branch)
+  cancel-in-progress: false  # Wait for the previous job to complete instead of canceling it
+
 jobs:
-  add-hello-world:
+  Add_HW:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository with lock
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Optional: shallow fetch
-          lock: true
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Add "Hello World" to map.py
         run: |
           echo '${{ inputs.variable }}' >> map.py
 
-      - name: Configure Git user (optional, adjust as needed)
+      - name: Configure Git user
         run: |
           git config --local user.name saquibansari59
           git config --local user.email saquibansari59@gmail.com
