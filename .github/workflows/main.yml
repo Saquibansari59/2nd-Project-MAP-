@@ -1,5 +1,3 @@
-# This workflow adds "Hello World" to map.py and updates related files
-
 name: Add HW
 
 on:
@@ -22,6 +20,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Create lock file
+        run: |
+          if [ -f .gitlock ]; then
+            echo "Another job is currently running. Exiting."
+            exit 1
+          else
+            echo "Locking the file for changes."
+            touch .gitlock
+          fi
 
       - name: Add "Hello World" to map.py
         run: |
@@ -46,12 +54,19 @@ jobs:
         if: ${{ steps.diff_check.outputs.diff == 'yes' }}
         run: git commit -m "Added ${{ inputs.variable }} to map.py and updated related files" --no-verify
 
-      - name: Fetch from main (uncomment if needed)
+      - name: Fetch from main
         run: git fetch https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
-      - name: Pull changes from main (uncomment if needed)
-        run: git pull https://github.com/Saquibansari59/2nd-Project-MAP-.git
+      - name: Pull changes from main with rebase
+        run: git pull --rebase https://github.com/Saquibansari59/2nd-Project-MAP-.git
 
       - name: Push Changes to main (if changes detected)
         if: ${{ steps.diff_check.outputs.diff == 'yes' }}
         run: git push https://github.com/Saquibansari59/2nd-Project-MAP-.git
+
+      - name: Remove lock file
+        run: rm .gitlock
+
+      - name: Ensure lock file is removed (always run, even on failure)
+        if: failure() || success()
+        run: rm -f .gitlock
