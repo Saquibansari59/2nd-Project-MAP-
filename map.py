@@ -34,4 +34,4 @@ map.add_child(fgp)
 map.add_child(folium.LayerControl())
 
 map.save("Map1.html")
-Test1
+Test2
