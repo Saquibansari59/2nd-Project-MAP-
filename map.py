@@ -34,6 +34,4 @@ map.add_child(fgp)
 map.add_child(folium.LayerControl())
 
 map.save("Map1.html")
-Saquib
-Ansari 
-Test
+Test1
